@@ -44,7 +44,7 @@ df = df[sample(nrow(df), 50000), ]
 
 head(df)
 
-print(xtable(head(df), type = "latex", digits=5))
+#print(xtable(head(df), type = "latex", digits=5))
 
 
 df$ts = anytime::anytime(df$ts)
@@ -64,7 +64,11 @@ sum(is.na(df))
 
 
 
-### UNIVARIATE ANALYSIS ###
+### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+###---------------------###
+#   Univariate Analysis   #
+###---------------------###
 
 
 
@@ -167,15 +171,6 @@ ggplot(df, aes(x=co)) +
 dev.off()
 
 
-# Fitting
-
-fit.gamma <- histDist(df$co, family=GA, nbins=21, main="Gamma distribution")
-
-
-
-
-
-
 
 
 ### ------------------------------------------------------------------------ ###
@@ -210,71 +205,6 @@ ggplot(df, aes(x=humidity)) +
   theme_minimal()
 
 dev.off()
-
-
-# Fitting
-
-X4 = df$humidity
-
-
-# From the kernel smoothing approach is evident that the variable is bimodal so it's good to try a mixture of distributions
-
-
-# Fitting Humidity with mixture models
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity_fit_GA_2 = gamlssMXfits(n = 2, X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity_fit_GA_2)
-logLik(Humidity_fit_GA_2)
-Humidity_fit_GA_2$prob # mixture weights
-fitted(Humidity_fit_GA_2, "mu")[1]
-
-mu_hat1 = exp(Humidity_fit_GA_2[["models"]][[1]][["mu_coefficients"]])    
-sigma_hat1 = exp(Humidity_fit_GA_2[["models"]][[1]][["sigma_coefficients"]])
-
-mu_hat2 = exp(Humidity_fit_GA_2[["models"]][[2]][["mu_coefficients"]])    
-sigma_hat2 = exp(Humidity_fit_GA_2[["models"]][[2]][["sigma_coefficients"]])
-
-
-hist(X4, breaks = 50,freq = FALSE)
-lines(seq(min(X4),max(X4),length=length(X4)),fit_GA_2[["prob"]][1]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat1, sigma = sigma_hat1),lty=2,lwd=3,col=2)
-lines(seq(min(X4),max(X4),length=length(X4)),fit_GA_2[["prob"]][2]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat2, sigma = sigma_hat2),lty=2,lwd=3,col=3)
-lines(seq(min(X4),max(X4),length=length(X4)),
-        fit_GA_2[["prob"]][1]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat1, sigma = sigma_hat1) +
-        fit_GA_2[["prob"]][2]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat2, sigma = sigma_hat2),
-        lty = 1, lwd = 3, col = 1)
-
-
-
-# Fitting the variable with a mixture of 2 lognormal distributions
-Humidity_fit_LOGNO_2 = gamlssMXfits(n = 2, X4~1, family = LOGNO, K = 2, data = NULL)  # n = initial points
-str(Humidity_fit_LOGNO_2)
-logLik(Humidity_fit_LOGNO_2)
-Humidity_fit_LOGNO_2$prob # mixture weights
-fitted(Humidity_fit_LOGNO_2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMXfits(n = 2, X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMXfits(n = 2, X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMX(X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-
 
 
 
@@ -314,71 +244,6 @@ ggplot(df, aes(x=lpg)) +
 dev.off()
 
 
-# Fitting
-
-X2 = df$lpg
-
-
-# From the kernel smoothing approach is evident that the variable is bimodal so it's good to try a mixture of distributions
-
-
-# Fitting Humidity with mixture models
-
-# Fitting the variable with a mixture of 2 gamma distributions
-LPG_fit_GA_2 = gamlssMXfits(n = 2, X2~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity_fit_GA_2)
-logLik(Humidity_fit_GA_2)
-Humidity_fit_GA_2$prob # mixture weights
-fitted(Humidity_fit_GA_2, "mu")[1]
-
-mu_hat1 = exp(Humidity_fit_GA_2[["models"]][[1]][["mu_coefficients"]])    
-sigma_hat1 = exp(Humidity_fit_GA_2[["models"]][[1]][["sigma_coefficients"]])
-
-mu_hat2 = exp(Humidity_fit_GA_2[["models"]][[2]][["mu_coefficients"]])    
-sigma_hat2 = exp(Humidity_fit_GA_2[["models"]][[2]][["sigma_coefficients"]])
-
-
-hist(X4, breaks = 50,freq = FALSE)
-lines(seq(min(X4),max(X4),length=length(X4)),fit_GA_2[["prob"]][1]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat1, sigma = sigma_hat1),lty=2,lwd=3,col=2)
-lines(seq(min(X4),max(X4),length=length(X4)),fit_GA_2[["prob"]][2]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat2, sigma = sigma_hat2),lty=2,lwd=3,col=3)
-lines(seq(min(X4),max(X4),length=length(X4)),
-      fit_GA_2[["prob"]][1]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat1, sigma = sigma_hat1) +
-        fit_GA_2[["prob"]][2]*dGA(seq(min(X4),max(X4),length=length(X4)), mu = mu_hat2, sigma = sigma_hat2),
-      lty = 1, lwd = 3, col = 1)
-
-
-
-# Fitting the variable with a mixture of 2 lognormal distributions
-Humidity_fit_LOGNO_2 = gamlssMXfits(n = 2, X4~1, family = LOGNO, K = 2, data = NULL)  # n = initial points
-str(Humidity_fit_LOGNO_2)
-logLik(Humidity_fit_LOGNO_2)
-Humidity_fit_LOGNO_2$prob # mixture weights
-fitted(Humidity_fit_LOGNO_2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMXfits(n = 2, X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMXfits(n = 2, X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-# Fitting the variable with a mixture of 2 gamma distributions
-Humidity.fit.GA.2 = gamlssMX(X4~1, family = GA, K = 2, data = NULL)  # n = initial points
-str(Humidity.fit.GA.2)
-logLik(Humidity.fit.GA.2)
-Humidity.fit.GA.2$prob # mixture weights
-fitted(Humidity.fit.GA.2, "mu")[1]
-
-
-
-
 
 
 ### ------------------------------------------------------------------------ ###
@@ -413,11 +278,6 @@ ggplot(df, aes(x=smoke)) +
   theme_minimal()
 
 dev.off()
-
-
-# Fitting
-
-
 
 
 
@@ -456,34 +316,11 @@ ggplot(df, aes(x=temp)) +
 dev.off()
 
 
-# Fitting
-
-Temp.fit.GA <- gamlss(df$temp ~ 1, family=GA)
-
-Temp.fit.EXP = histDist(df$temp, family=EXP, nbins=150, main="Temperature exponential")
-Temp.fit.GA = histDist(df$temp, family=GA, nbins=150, main="Temperature gamma")
-Temp.fit.IG = histDist(df$temp, family=IG, nbins=150, main="Temperature inverse gaussian")
-Temp.fit.LOGNO = histDist(df$temp, family=LOGNO, nbins=150, main="Temperature log-normal distribution")
-Temp.fit.WEI = histDist(df$temp, family=WEI, nbins=150, main="Temperature weibull")
-Temp.fit.LO = histDist(df$temp, family=LO, nbins=150, main="Temperature logistic")
 
 
 
 
-
-
-# Mixtures
-
-
-
-
-
-
-
-
-
-### DIMENSIONALITY REDUCTION
-
+### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ###------------------------------###
 #   Principal Component Analysis   #
@@ -494,9 +331,10 @@ Temp.fit.LO = histDist(df$temp, family=LO, nbins=150, main="Temperature logistic
 
 df_numeric = df %>% select_if(is.numeric)
 
-df_numeric_scaled = scale(df_numeric)
+df_numeric_scaled = data.frame(scale(df_numeric))
 
-#df_scaled = df %>% mutate(across(where(is.numeric), scale))
+
+
 
 
 # Pairplot of all numerical variables
@@ -617,23 +455,7 @@ dev.off()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### CLUSTERING ###
-
+### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ###-------------------###
 #   Cluster Analysis    #
@@ -695,28 +517,28 @@ dev.off()
 
 
 
-
-
-
-# We can see that the first PC influences the most the clusterization, 
-# while considering the projection on the second PC the red cluster and the blue one are mostly overlapped
-
-
 # Hopkins statistic
-clustertend::hopkins(shrinkedDataset, n=100)
+hopkins::hopkins(df_numeric)
+
 
 
 # Determining the best number of clusters
 
 
 # Elbow method
-factoextra::fviz_nbclust(RSDataset.scaled, kmeans, nstart = 25, method = "wss") +
+
+
+factoextra::fviz_nbclust(df_numeric_scaled, kmeans, nstart = 10, method = "wss") +
   geom_vline(xintercept = 3, linetype = 2) +
   labs(subtitle = "Elbow method")
 
+
+
 # Silhouette method
-factoextra::fviz_nbclust(RSDataset.scaled, kmeans, method = "silhouette") +
+factoextra::fviz_nbclust(df_numeric_scaled, kmeans, method = "silhouette") +
   labs(subtitle = "Silhouette method")
+
+
 
 # Gap statistic
 set.seed(454)
