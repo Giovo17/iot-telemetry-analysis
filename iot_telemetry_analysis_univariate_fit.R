@@ -1,5 +1,4 @@
-# iot telemetry analysis
-
+# iot-telemetry-analysis-univariate-fit
 
 # Import libraries
 library(anytime)
@@ -17,6 +16,7 @@ library(corrplot)
 library(cluster)
 library(factoextra)
 library(mclust)
+library(clValid)
 library(scales)
 library(fpc)
 library(hamlet)
@@ -24,11 +24,10 @@ library(hopkins)
 library(NbClust)
 
 
-
 set.seed(17)
 
 
-# Import dataset from csv
+# Import dataset
 
 # Online from github repo
 #df = read.csv('https://raw.githubusercontent.com/Giovo17/iot-telemetry-analysis/main/iot_telemetry_data.csv')
@@ -37,8 +36,8 @@ set.seed(17)
 setwd("~/Documents/University/Data\ Science/1°\ Year\ (2022-2023)/Data\ Analysis\ (1)/Exam\ -\ Data\ Analysis/Report/iot-telemetry-analysis")
 df = read.csv("iot_telemetry_data.csv")
 
-# Randomly select 50,000 rows from dataset to speed up runtimes
-df = df[sample(nrow(df), 50000), ]
+# Randomly select 5000 rows from dataset to speed up runtimes
+df = df[sample(nrow(df), 5000), ]
 
 
 
@@ -71,7 +70,6 @@ df$device = revalue(df$device, c("b8:27:eb:bf:9d:51"="Device 1", "00:0f:00:70:91
 
 table(df$device)
 
-#xtable(df$device)
 
 
 
@@ -84,16 +82,6 @@ table(df$device)
 table(df$light)
 
 
-jpeg(file="../LateX_project/images/chapter2/light_barplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
-
-ggplot(df, aes(x=as.factor(light) )) +
-  geom_bar(color="#6b9bc3", fill=rgb(0.1,0.4,0.5,0.7) ) + 
-  geom_text(stat='count', aes(label=..count..), vjust=-1) +
-  theme_minimal()
-
-dev.off()
-
-
 
 
 
@@ -101,18 +89,6 @@ dev.off()
 # Motion (binary variable)
 
 table(df$motion)
-
-
-jpeg(file="../LateX_project/images/chapter2/motion_barplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
-
-ggplot(df, aes(x=as.factor(motion) )) +
-  geom_bar(color="#6b9bc3", fill=rgb(0.1,0.4,0.5,0.7) ) + 
-  geom_text(stat='count', aes(label=..count..), vjust=-1) +
-  theme_minimal()
-
-dev.off()
-
-
 
 
 
@@ -126,34 +102,23 @@ moments::skewness(df$co)
 moments::kurtosis(df$co)
 
 
-# EDA
-
-jpeg(file="../LateX_project/images/chapter2/co_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
-
-ggplot(df, aes(y=co)) + 
-  geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
-  theme(
-    axis.text=element_text(size=6.5), 
-    axis.title=element_text(size=14, face="bold")
-  ) +
-  theme_minimal()
-
-dev.off()
-
-
-jpeg(file="../LateX_project/images/chapter2/co_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
-
-ggplot(df, aes(x=co)) +
-  geom_histogram( binwidth=0.0008, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
-  theme(plot.title = element_text(size=15)) +
-  theme_minimal()
-
-dev.off()
 
 
 # Fitting
+family=c('NO','LO','GU','RG','exGAUS','TF','PE','SN1','SN2',
+         'EGB2','GT','JSU','SHASH','SST')
+v=c()
+for (f in family){
+  fit.model=histDist(T, family=f,nbins = 30, main=paste(f,'distribution'))
+  v=c(v,fit.model$df.fit)# number of parameters
+  #v=c(v,fitted(fit.model, "mu")[1])# ML estimated parameter
+  #v=c(v,fitted(fit.model, "sigma")[2])
+  v=c(v,logLik(fit.model))
+  v=c(v,AIC(fit.model))# AIC (to be minimized)
+  v=c(v,fit.model$sbc)
+}
 
-fit.gamma <- histDist(df$co, family=GA, nbins=21, main="Gamma distribution")
+
 
 
 

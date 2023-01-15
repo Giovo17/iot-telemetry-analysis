@@ -1,5 +1,4 @@
-# iot telemetry analysis
-
+# iot-telemetry-analysis
 
 # Import libraries
 library(anytime)
@@ -17,6 +16,7 @@ library(corrplot)
 library(cluster)
 library(factoextra)
 library(mclust)
+library(clValid)
 library(scales)
 library(fpc)
 library(hamlet)
@@ -24,11 +24,10 @@ library(hopkins)
 library(NbClust)
 
 
-
 set.seed(17)
 
 
-# Import dataset from csv
+# Import dataset
 
 # Online from github repo
 #df = read.csv('https://raw.githubusercontent.com/Giovo17/iot-telemetry-analysis/main/iot_telemetry_data.csv')
@@ -37,8 +36,8 @@ set.seed(17)
 setwd("~/Documents/University/Data\ Science/1°\ Year\ (2022-2023)/Data\ Analysis\ (1)/Exam\ -\ Data\ Analysis/Report/iot-telemetry-analysis")
 df = read.csv("iot_telemetry_data.csv")
 
-# Randomly select 50,000 rows from dataset to speed up runtimes
-df = df[sample(nrow(df), 50000), ]
+# Randomly select 5000 rows from dataset to speed up runtimes
+df = df[sample(nrow(df), 5000), ]
 
 
 
@@ -104,7 +103,7 @@ table(df$device)
 table(df$light)
 
 
-jpeg(file="../LateX_project/images/chapter2/light_barplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/light_barplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=as.factor(light) )) +
   geom_bar(color="#6b9bc3", fill=rgb(0.1,0.4,0.5,0.7) ) + 
@@ -123,7 +122,7 @@ dev.off()
 table(df$motion)
 
 
-jpeg(file="../LateX_project/images/chapter2/motion_barplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/motion_barplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=as.factor(motion) )) +
   geom_bar(color="#6b9bc3", fill=rgb(0.1,0.4,0.5,0.7) ) + 
@@ -148,7 +147,7 @@ moments::kurtosis(df$co)
 
 # EDA
 
-jpeg(file="../LateX_project/images/chapter2/co_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/co_boxplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(y=co)) + 
   geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
@@ -161,7 +160,7 @@ ggplot(df, aes(y=co)) +
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter2/co_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/co_histogram.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=co)) +
   geom_histogram( binwidth=0.0008, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
@@ -184,7 +183,7 @@ moments::kurtosis(df$humidity)
 
 # EDA
 
-jpeg(file="../LateX_project/images/chapter2/humidity_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/humidity_boxplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(y=humidity)) + 
   geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
@@ -197,7 +196,7 @@ ggplot(df, aes(y=humidity)) +
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter2/humidity_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/humidity_histogram.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=humidity)) +
   geom_histogram( binwidth=5, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
@@ -221,7 +220,7 @@ moments::kurtosis(df$lpg)
 
 # EDA
 
-jpeg(file="../LateX_project/images/chapter2/lpg_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/lpg_boxplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(y=lpg)) + 
   geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
@@ -234,7 +233,7 @@ ggplot(df, aes(y=lpg)) +
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter2/lpg_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/lpg_histogram.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=lpg)) +
   geom_histogram( binwidth=0.0005, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
@@ -257,7 +256,7 @@ moments::kurtosis(df$smoke)
 
 # EDA
 
-jpeg(file="../LateX_project/images/chapter2/smoke_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/smoke_boxplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(y=smoke)) + 
   geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
@@ -270,7 +269,7 @@ ggplot(df, aes(y=smoke)) +
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter2/smoke_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/smoke_histogram.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=smoke)) +
   geom_histogram( binwidth=0.002, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
@@ -293,7 +292,7 @@ moments::kurtosis(df$temp)
 
 # EDA
 
-jpeg(file="../LateX_project/images/chapter2/temp_boxplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/temp_boxplot.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(y=temp)) + 
   geom_boxplot(fill="#6b9bc3", alpha=0.7) + 
@@ -306,7 +305,7 @@ ggplot(df, aes(y=temp)) +
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter2/temp_histogram.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter2/temp_histogram.jpeg", width=6, height =6, units='in', res=200)
 
 ggplot(df, aes(x=temp)) +
   geom_histogram( binwidth=1, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
@@ -331,14 +330,14 @@ dev.off()
 
 df_numeric = df %>% select_if(is.numeric)
 
-df_numeric_scaled = data.frame(scale(df_numeric))
+df_numeric_scaled = as.data.frame(scale(df_numeric))
 
 
 
 
 
 # Pairplot of all numerical variables
-jpeg(file="../LateX_project/images/chapter3/pairplot_numeric_dataset.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/pairplot_numeric_dataset.jpeg", width=6, height =6, units='in', res=200)
 
 ggpairs(df_numeric,
         upper = list(continuous = "density", combo = "box_no_facet"),
@@ -349,7 +348,7 @@ dev.off()
 
 
 # A better way to visualize correlation matrix
-jpeg(file="../LateX_project/images/chapter3/correlation_matrix.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/correlation_matrix.jpeg", width=6, height =6, units='in', res=200)
 
 corrplot::corrplot.mixed(cor(df_numeric), upper = "ellipse")
 
@@ -357,7 +356,7 @@ dev.off()
 
 
 # Pairplot of all numerical variables with device hue
-jpeg(file="../LateX_project/images/chapter3/pairplot_numeric_dataset_hue.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/pairplot_numeric_dataset_hue.jpeg", width=6, height =6, units='in', res=200)
 
 ggpairs(df, columns = c(3,4,6,8,9), ggplot2::aes(colour=device), upper = list(continuous = wrap('cor', size = 1.5)))
 
@@ -376,7 +375,6 @@ print(var[5]/sum(var)*100)
 
 
 # PCA
-
 
 df_numeric_scaled.cov = cov(df_numeric_scaled)
 df_numeric_scaled.eigen = eigen(df_numeric_scaled.cov)
@@ -420,7 +418,7 @@ data = data.frame(
 )
 
 # Scree plot
-jpeg(file="../LateX_project/images/chapter3/scree_plot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/scree_plot.jpeg", width=6, height =6, units='in', res=200)
 
 #plot(df_numeric_scaled.eigen$values, type="b")
 
@@ -436,7 +434,7 @@ dev.off()
 
 
 
-jpeg(file="../LateX_project/images/chapter3/pca_plot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/pca_plot.jpeg", width=6, height =6, units='in', res=200)
 
 factoextra::fviz_pca_ind(pr.out, legend="top", habillage=df$device, palette=c("green", "red", "blue"), geom="point", ggtheme=theme_minimal())
 
@@ -444,7 +442,7 @@ dev.off()
 
 
 
-jpeg(file="../LateX_project/images/chapter3/biplot.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter3/biplot.jpeg", width=6, height =6, units='in', res=200)
 
 factoextra::fviz_pca_biplot(pr.out, geom="point", ggtheme=theme_minimal())
 
@@ -462,29 +460,36 @@ dev.off()
 ###-------------------###
 
 
-# Cluster validation   
+df_cl = df[sample(nrow(df), 500), ]
+
+df_cl_numeric = df_cl %>% select_if(is.numeric)
+df_cl_numeric_scaled = as.data.frame(scale(df_cl_numeric))
 
 
-# Assessment of cluster tendency
+
+# 1. CLUSTER VALIDATION   
+
+# 1a. Assessment of cluster tendency
+
 
 # Generating the benchmark dataset from a uniform distribution
-benchmark_df = apply(df_numeric, 2, function(x){runif(length(x), min(x), max(x))})
+benchmark_df = apply(df_cl_numeric, 2, function(x){runif(length(x), min(x), max(x))})
 benchmark_df = as.data.frame(benchmark_df) # Transform benchmark_df in a data frame cause apply return a vector
-benchmark_df_scaled = scale(benchmark_df)
+benchmark_df_scaled = as.data.frame(scale(benchmark_df))
 
 
 
 
-jpeg(file="../LateX_project/images/chapter4/pairplot_benchmark_dataset.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/pairplot_numeric_dataset.jpeg", width=6, height =6, units='in', res=200)
 
-ggpairs(df_numeric_scaled,
+ggpairs(df_cl_numeric_scaled,
         upper = list(continuous = "density", combo = "box_no_facet"),
         lower = list(continuous = "points", combo = "dot_no_facet"))
 
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter4/pairplot_benchmark_dataset.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/pairplot_benchmark_dataset.jpeg", width=6, height =6, units='in', res=200)
 
 ggpairs(benchmark_df_scaled,
         upper = list(continuous = "density", combo = "box_no_facet"),
@@ -495,139 +500,289 @@ dev.off()
 
 
 
-
-
 # Plot on the PC space
-
-jpeg(file="../LateX_project/images/chapter4/pca_benchmark_dataset.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/pcaplot_benchmark_dataset.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_pca_ind(prcomp(benchmark_df_scaled), title="PCA - Benchmark Dataset",
-                         habillage=df$device, legend="bottom", geom="point", ggtheme=theme_minimal())
+                         habillage=df_cl$device, legend="bottom", geom="point", ggtheme=theme_minimal())
 
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter4/pca__benchmark_dataset.jpeg", width = 6, height = 6, units = 'in', res = 200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/pcaplot_numeric_dataset.jpeg", width=6, height=6, units='in', res=200)
 
-factoextra::fviz_pca_ind(prcomp(df_numeric_scaled), title="PCA - Original Dataset",
-                         habillage=df$device, legend="bottom", geom="point", ggtheme=theme_minimal())
+factoextra::fviz_pca_ind(prcomp(df_cl_numeric_scaled), title="PCA - Original Dataset",
+                         habillage=df_cl$device, legend="bottom", geom="point", ggtheme=theme_minimal())
 
 dev.off()
-
 
 
 
 # Hopkins statistic
-hopkins::hopkins(df_numeric)
+hopkins::hopkins(df_cl_numeric)
+hopkins::hopkins(benchmark_df)
 
 
 
-# Determining the best number of clusters
+# Visual assessment of cluster tendency
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_df_numeric.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_dist(dist(df_cl_numeric_scaled), show_labels=FALSE)
+
+dev.off()
+
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_benchmark_df.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_dist(dist(benchmark_df), show_labels=FALSE)
+
+dev.off()
+
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_df_numeric_manhattan.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_dist(dist(df_cl_numeric_scaled, method="manhattan"), show_labels=FALSE)
+
+dev.off()
+
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_benchmark_df_manhattan.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_dist(dist(benchmark_df, method="manhattan"), show_labels=FALSE)
+
+dev.off()
+
+
+
+
+# 1b. Determining the best number of clusters
 
 
 # Elbow method
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/elbow_method_kmeans.jpeg", width=6, height=6, units='in', res=200)
 
+factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=10, method = "wss") +
+  geom_vline(xintercept=3, linetype=2)
 
-factoextra::fviz_nbclust(df_numeric_scaled, kmeans, nstart = 10, method = "wss") +
-  geom_vline(xintercept = 3, linetype = 2) +
-  labs(subtitle = "Elbow method")
+dev.off()
 
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/elbow_method_pam.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method="wss") +
+  geom_vline(xintercept=3, linetype=2)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/elbow_method_hcut.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, hcut, nstart=10, method="wss") +
+  geom_vline(xintercept=3, linetype=2)
+
+dev.off()
 
 
 # Silhouette method
-factoextra::fviz_nbclust(df_numeric_scaled, kmeans, method = "silhouette") +
-  labs(subtitle = "Silhouette method")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_method_kmeans.jpeg", width=6, height=6, units='in', res=200)
 
+factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=10, method="silhouette")
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_method_pam.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method="silhouette")
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_method_hcut.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, hcut, nstart=10, method="silhouette")
+
+dev.off()
 
 
 # Gap statistic
-set.seed(454)
-factoextra::fviz_nbclust(RSDataset.scaled, kmeans, nstart = 50, method = "gap_stat", nboot = 500) + # nboot = number of simulations
-  labs(subtitle = "Gap statistic method")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/gap_method_kmeans.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=20, method='gap_stat', nboot=150)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/gap_method_pam.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method='gap_stat', nboot=150)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/gap_method_hcut.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(df_cl_numeric_scaled, hcut, nstart=20, method='gap_stat', nboot=150)
+
+dev.off()
+
 
 # NbClust function
-nb_km_eu = NbClust(RSDataset.scaled, distance = "euclidean", min.nc = 2,
-                   max.nc = 10, method = "kmeans")
-factoextra::fviz_nbclust(nb_km_eu)
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="kmeans")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_kmeans_euclidean.jpeg", width=6, height=6, units='in', res=200)
 
-nb_km_man = NbClust(RSDataset.scaled, distance = "manhattan", min.nc = 2,
-                    max.nc = 10, method = "kmeans")
-factoextra::fviz_nbclust(nb_km_man)
+factoextra::fviz_nbclust(nb)
 
-nb_avg_eu = NbClust(RSDataset.scaled, distance = "euclidean", min.nc = 2,
-                    max.nc = 10, method = "average")
-factoextra::fviz_nbclust(nb_avg_eu)
+dev.off()
 
-nb_single_eu = NbClust(RSDataset.scaled, distance = "euclidean", min.nc = 2,
-                       max.nc = 10, method = "single")
-factoextra::fviz_nbclust(nb_single_eu)
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="single")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_single_euclidean.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="average")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_average_euclidean.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="complete")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_complete_euclidean.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="single")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_single_manhattan.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="average")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_average_manhattan.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="complete")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_complete_manhattan.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+nb <- NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="centroid")
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_centroid_euclidean.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_nbclust(nb)
+
+dev.off()
+
+
+
+
+# 1c. Cluster validation
+
+
+# Internal cluster validation
+single_eu = clValid::clValid(df_cl_numeric_scaled, nClust=c(3,4), clMethods=c("hierarchical", "kmeans", "clara"), 
+                             validation=c("internal", "stability"), metric="euclidean", method="single")
+
+summary(single_eu)
 
 
 
 # External cluster validation
+km_res = factoextra::eclust(df_cl_numeric_scaled, FUNcluster="kmeans", k=3, nstart=10, graph=FALSE)
 
-km = factoextra::eclust(RSDataset.scaled, k=3, FUNcluster="kmeans", nstart=25, graph=FALSE)
-factoextra::fviz_cluster(km, geom = "point", ellipse.type = "norm",
-                         palette = "jco", ggtheme = theme_minimal())
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/kmeans_viz.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_cluster(km_res, geom="point", ellipse.type="norm", palette="jco", ggtheme=theme_minimal())
+
+dev.off()
+
 
 # Confusion matrix to compare the kmeans result with external information
-table(km$cluster, shrinkedDataset$device)
-# The results are decently good for each of the 3 clusters
-# Missclassified point: 27+17=44 that is the 4.4% of the data
+table(km_res$cluster, df_cl$device)
+#print(, type="latex", digits=5)
+#print(xtable(table(km_res$cluster, df_cl$device), type="latex"), file="filename2.tex")
 
-# Silhouette plot
-factoextra::fviz_silhouette(km)
+# The results are decently good for each of the 3 clusters
+# Missclassified points: 11+8=19 that is the 3.8% of the data
+
+
+
+hc_res = factoextra::eclust(df_cl_numeric_scaled, FUNcluster="hclust", k=3, hc_metric="euclidean", 
+                            hc_method="ward.D2", graph=FALSE)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/hc_dend_viz.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_dend(hc_res, show_labels=FALSE, palette="jco", ggtheme=theme_minimal())
+
+dev.off()
+
+
+# Silhouette plot on kmeans
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_silhouette(km_res, palette="jco", ggtheme=theme_minimal())
+
+dev.off()
 # The results are good
 
 
-pam = factoextra::eclust(RSDataset.scaled, k=3, FUNcluster="pam", graph=FALSE)
-factoextra::fviz_cluster(pam, geom = "point", ellipse.type = "norm",
-                         palette = "jco", ggtheme = theme_minimal())
+clara_res = factoextra::eclust(df_cl_numeric_scaled, k=3, FUNcluster="clara", graph=FALSE)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", width=6, height=6, units='in', res=200)
 
-# Confusion matrix to compare the pam result with external information
-table(pam$clustering, shrinkedDataset$device)
+factoextra::fviz_cluster(clara_res, geom = "point", ellipse.type = "norm", palette = "jco", ggtheme = theme_minimal())
+
+dev.off()
+
+
+
+# Confusion matrix to compare the clara result with external information
+table(clara_res$clustering, df_cl$device)
+# latex
 # The results are decently good for each of the 3 clusters, and they are sightly better with respect to the kmeans results
-# Missclassified point: 20+15=35 that is the 3.5% of the data
+# Missclassified point: 11+8=19 that is the 3.8% of the data
 
-# Silhouette plot
-factoextra::fviz_silhouette(pam)
+
+
+# Silhouette plot on clara
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_clara.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_silhouette(clara_res, palette="jco", ggtheme=theme_minimal())
+
+dev.off()
 # In the first cluster there some units with a silhouette value lower than 0, this is a bad result for pam algorithm
 
-head(pam$silinfo$widths)
+
+
 
 missCvec = vector()   # Vector of missclassified units
 
-for(k in seq(1,length(RSDataset[,1]))){
-  if(pam$silinfo$widths[k,3]<0){
-    #print(pam$silinfo$widths[k,])
-    missCvec = append(missCvec, strtoi(rownames(pam$silinfo$widths[k,])))  # Add the missclassified units to missCvec
+for(k in seq(1, length(df_cl[,1]))){
+  if(clara_res$silinfo$widths[k,3] < 0){
+    missCvec = append(missCvec, strtoi(rownames(clara_res$silinfo$widths[k,])))  # Add the missclassified units to missCvec
   }
 }
 
-# Visualizing the units that are badly assigned by pam algorithm
-colvec = pam$clustering   # Assigning initial colors according to pam clusterization
+print(missCvec)
+
+
+# Visualizing the units that are badly assigned by clara algorithm
+colvec = clara_res$clustering   # Assigning initial colors according to clara clusterization
 colvec[missCvec] = 4      # Changing color to the missclassified units
 
-# Visualize the missclassified units in the scatterplot
-pairs(RSDataset.scaled, gap=0, pch=16, col=colvec, cex=c(0.8, 0.8, 0.8, 3)[colvec])
+
+# Visualize the clara missclassified units in the scatterplot
+#jpeg(file="../LateX_project/images/chapter4/chapter4.1/pairplot_missclassified_clara.jpeg", width=6, height =6, units='in', res=200)
+
+#pairs(df_cl_numeric_scaled, gap=0, pch=16, col=colvec, cex=c(0.3, 0.3, 0.3, 3)[colvec])
+
+#dev.off()
 # As we can see the three blue missclassified units are difficult units to be clusterized cause there are in between two clusters
 
 
-# Have to try clara with the complete dataset
-
-
-hclust_average = factoextra::eclust(RSDataset.scaled, FUNcluster="hclust", k=3, metric="euclidean", 
-                                    hc.method="average", graph=FALSE)
-factoextra::fviz_dend(hclust_average, palette = "jco")
-
-# Confusion matrix to compare the pam result with external information
-table(pam$clustering, shrinkedDataset$device)
-
-# Silhouette plot
-factoextra::fviz_silhouette(km)
-
-
-# Dunn index
 
 
 
@@ -637,109 +792,142 @@ factoextra::fviz_silhouette(km)
 
 
 
+# ------------------------------------------------------------------------------
+
+# 2. Hierarchical agglomerative clustering
 
 
+diss = cluster::daisy(df_cl_numeric_scaled)  # Dissimilarity triangular matrix computed with the Gower's index
 
-
-
-
-
-
-
-###---------------------------------------###
-#   Hierarchical agglomerative clustering   #
-###---------------------------------------###
-
-diss = cluster::daisy(RSDataset.scaled)  # Dissimilarity triangular matrix computed with the Gower's index
-round(as.matrix(diss), 2) # Transform the triangular matrix in a squared matrix
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dissimilarity_matrix.jpeg", width=6, height =6, units='in', res=200)
 
 factoextra::fviz_dist(diss)  # Dissimilarity matrix graphic representation
 
+dev.off()
 
-# Need to apply all agglomerative clustering methods and compare them
+
+
+
 # The average linkage method and Ward's method should perform better than the others (need to check)
-hc.single = hclust(d = diss, method = "single")
-hc.complete = hclust(d = diss, method = "complete")
-hc.average = hclust(d = diss, method = "average")
-hc.ward = hclust(d = diss, method = "ward.D2")  # Ward method with squared distances
+hc_single = hclust(d=diss, method="single")
+hc_complete = hclust(d=diss, method="complete")
+hc_average = hclust(d=diss, method="average")
+hc_ward = hclust(d=diss, method="ward.D2")  # Ward method with squared distances
 
-# Dendogram
-factoextra::fviz_dend(hc.single, cex=0.5)
-factoextra::fviz_dend(hc.complete, cex=0.5)
-factoextra::fviz_dend(hc.average, cex=0.5)
-factoextra::fviz_dend(hc.ward, cex=0.5)
+
+# Dendograms
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_single.jpeg", width=6, height =6, units='in', res=200)
+
+factoextra::fviz_dend(hc_single, k=3, cex=0.5)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_complete.jpeg", width=6, height =6, units='in', res=200)
+
+factoextra::fviz_dend(hc_complete, k=3, cex=0.5)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_average.jpeg", width=6, height =6, units='in', res=200)
+
+factoextra::fviz_dend(hc_average, k=3, cex=0.5)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_ward.jpeg", width=6, height =6, units='in', res=200)
+
+factoextra::fviz_dend(hc_ward, k=3, cex=0.5)
+
+dev.off()
+
+
 
 # Need to compare the cophenetic distance vector with the original distance vector for every method to select the best one
-cor(diss, cophenetic(hc.single))  # Correlation between original distance vector and cophenetic of single method
-cor(diss, cophenetic(hc.complete))  # Correlation between original distance vector and cophenetic of complete method
-cor(diss, cophenetic(hc.average))  # Correlation between original distance vector and cophenetic of average method
-cor(diss, cophenetic(hc.ward))  # Correlation between original distance vector and cophenetic of ward method
+cor(diss, cophenetic(hc_single))  # Correlation between original distance vector and cophenetic of single method
+cor(diss, cophenetic(hc_complete))  # Correlation between original distance vector and cophenetic of complete method
+cor(diss, cophenetic(hc_average))  # Correlation between original distance vector and cophenetic of average method
+cor(diss, cophenetic(hc_ward))  # Correlation between original distance vector and cophenetic of ward method
 # According to the comparison of the correlations the best method is the average
 
-# Clustering division according to the average method
-groupsAverage = cutree(hc.average, h=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
-table(groupsAverage)
+
 
 # Clustering division according to the average method
-groupsSingle = cutree(hc.single, h=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
-table(groupsSingle)
+groupsAverage = cutree(hc_average, k=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
+table(groupsAverage)
+
+
+# Clustering division according to the ward method
+groupsWard = cutree(hc_ward, k=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
+table(groupsWard)
 
 # According to the two previous results I think there are outliers cause some clusters are containing only 1 or 2 points
 # From the scatterplot it's clearer their presence
 
 
 # Confusion matrix
-table(groupsAverage, groupsSingle)  # Useful to compare two different clustering partitions
+table(groupsAverage, groupsWard)  # Useful to compare two different clustering partitions
 
-
-# Not sure if this is helpful...
-diffClass = mclust::classError(groupsAverage, groupsSingle)  # Useful to know the points that are differently classified by the two methods
-missClassifiedItems = dataset[diffClass$misclassified,]  # See the differently classified points in the original dataset
-ggplot(missClassifiedItems, aes(x=device)) + geom_bar()   # Plot the device column to see which device contributes more to the "missclassification"
 
 
 
 
 # Scatterplot with points colored according to the cluster of membership in groups
-pairs(RSDataset.scaled, pch=16, gap=0, col=groupsAverage)  
-pairs(RSDataset.scaled, pch=16, gap=0, col=groupsSingle)
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/pairplot_cluster_average.jpeg", width=6, height=6, units='in', res=200)
+
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=groupsAverage)
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/pairplot_cluster_ward.jpeg", width=6, height=6, units='in', res=200)
+
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=groupsWard)
+
+dev.off()
+
 
 
 # Clusters representation in the space of the principal components
-factoextra::fviz_cluster(list(data = RSDataset.scaled, cluster = groupsAverage),
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/pcaplot_cluster_ward.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_cluster(list(data = df_cl_numeric_scaled, cluster = groupsWard),
                          palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
                          ellipse.type = "convex", # Concentration ellipse
                          repel = TRUE, # Avoid label overplotting (slow)
                          show.clust.cent = FALSE, ggtheme = theme_minimal())
-# Need to comment about the position of each cluster
-# ex. The units in the green cluster have high level of the first PC and average level of the second PC
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/pcaplot_cluster_average.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_cluster(list(data=df_cl_numeric_scaled, cluster=groupsAverage),
+                         palette=c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
+                         ellipse.type="convex", # Concentration ellipse
+                         repel=TRUE, # Avoid label overplotting (slow)
+                         show.clust.cent=FALSE, ggtheme=theme_minimal())
+
+dev.off()
 
 
-hc.agnes = cluster::agnes(x = RSDataset,
-                          stand = TRUE,
-                          metric = "euclidean",
-                          method = "average")
 
+hc.agnes = cluster::agnes(x=df_cl_numeric_scaled, stand=FALSE, metric="euclidean", method="average")
+jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_agnes.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_dend(hc.agnes, cex=0.6, k=3)
 
-
-
-
-###-------------------------###
-#   Partitioning Clustering   #
-###-------------------------###
+dev.off()
 
 
 
 
-# Selecting the best number of clusters
-factoextra::fviz_nbclust(RDataset.scaled, kmeans, nstart=25, method="wss") + 
-  geom_vline(xintercept = 3, linetype = 2)
-# Have to search for an elbow in this graph there's one for x=3
+# ------------------------------------------------------------------------------
 
-set.seed(342) # Seed for initial centroids random generation 
-km = kmeans(RDataset.scaled, centers=3, nstart=10)
+# 3. Partitioning clustering 
+
+# KMEANS
+
+
+km = kmeans(df_cl_numeric_scaled, centers=3, nstart=25)
+
 
 # Analizing km outputs
 
@@ -752,6 +940,10 @@ print(km$centers)   # Very important to analize Cluster means to characterize th
 # 2  0.8242563 -0.8612697  0.8256278  0.8261186 -0.09137922
 # 3 -0.2313946 -0.1359184 -0.1945112 -0.2014368  1.44686904
 
+# latex
+
+
+
 # Data is scaled so the mean for each variable is 0
 # Units in cluster 1 are characterized by an above average humidity and the other values are below average
 # Units in cluster 2 are characterized by an above average temperature, slightly below average values co, lpg and smoke and more or less average humidity
@@ -762,72 +954,80 @@ print(km$centers)   # Very important to analize Cluster means to characterize th
 
 clusterVariability = scales::label_percent()(km$betweenss/km$totss)   # Variability explained by the clustering
 print(clusterVariability)
-# So this clustering method explains the 71% of the original variability
+# So this clustering method explains the 68% of the original variability
 # Useful to select the best clustering method given the number of clusters K (the higher the better)
 
+
 # Visualize the clusters in the scatterplot
-pairs(RDataset.scaled, pch=16, gap=0, col=km$cluster)
+jpeg(file="../LateX_project/images/chapter4/chapter4.3/pairplot_cluster_kmeans.jpeg", width=6, height=6, units='in', res=200)
+
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=km$cluster)
+
+dev.off()
+
+
 
 # Visualize the clusters in the scatterplot with centroid
-RDatasetCentr.scaled = rbind(RDatasetCentr.scaled, km$centers)
+RDatasetCentr_scaled = rbind(df_cl_numeric_scaled, km$centers)
 clusterMembership = km$cluster
-clusterMembership.new = c(km$cluster, rep(4,3)) # Adding 3 units with cluster membership 4
-pairs(RDatasetCentr.scaled, pch=16, gap=0,
-      col=c("red", "green", "blue", "black")[clusterMembership.new],  # Assigning points colors: black for centroids
-      cex=c(rep(0.7,3), 1.3)[[clusterMembership.new]]) # Assigning points dimensions: 0.7 for all point, 1.3 for centroids
+clusterMembership_new = c(km$cluster, rep(4,3)) # Adding 3 units with cluster membership 4
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.3/pairplot_cluster_kmeans_centroids.jpeg", width=6, height=6, units='in', res=200)
+
+pairs(RDatasetCentr_scaled, pch=16, gap=0,
+      col=c("red", "green", "blue", "black")[clusterMembership_new],  # Assigning points colors: black for centroids
+      cex=c(0.7, 0.7, 0.7, 1.3)[clusterMembership_new]) # Assigning points dimensions: 0.7 for all point, 1.3 for centroids
+
+dev.off()
+
 
 
 # Analizing the Cluster means of the original dataset 
-aggregate(RDataset, by=list(cluster=km$cluster), mean)
+aggregate(df_cl_numeric, by=list(cluster=km$cluster), mean)
 #   cluster          co humidity         lpg      smoke     temp
 # 1       1 0.003283287 76.07329 0.005634292 0.01474428 19.84161
 # 2       2 0.005664408 51.34459 0.008408754 0.02258743 22.15495
 # 3       3 0.004262222 59.69658 0.006855943 0.01815646 26.42137
 
-# aggregate(RSDataset, by=list(cluster=km$cluster), sd)
+# latex
+
+
 
 # Adding the column of cluster of membership to the dataset
-CRDataset = cbind(RDataset, cluster=km$cluster)
+CRDataset = cbind(df_cl_numeric, cluster=km$cluster)
 
 # Visualize the clusters in the PC space
-fviz_cluster(km, 
-             data = RDataset.scaled,
-             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
-             ellipse.type = "euclid", # Concentration ellipse
-             star.plot = TRUE, # Add segments from centroids to items
-             repel = TRUE, # Avoid label overplotting (slow)
-             ggtheme = theme_minimal())
+jpeg(file="../LateX_project/images/chapter4/chapter4.3/pcaplot_cluster_kmeans.jpeg", width=6, height=6, units='in', res=200)
+
+fviz_cluster(km, data=df_cl_numeric_scaled, palette=c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
+             ellipse.type="euclid", # Concentration ellipse
+             star.plot=TRUE, # Add segments from centroids to items
+             repel=TRUE, # Avoid label overplotting (slow)
+             ggtheme=theme_minimal())
+
+dev.off()
 
 
 
 
-# PARTITIONING CLUSTERING METHOD - KMEDOIDS
+# KMEDOIDS
+
+
 # Working with the whole dataset including categorical variables
 # I expect a better result cause I think in the dataset there are some outliers
 
-pam = cluster::pam(shrinkedDataset, 3, metric="euclidean", stand=FALSE)
+clara_cl = cluster::clara(df_cl_numeric_scaled, 3, metric="euclidean", stand=FALSE)
 
-pairs(shrinkedDataset, pch=16, gap=0, col=pam$clustering)
 
-# Scatterplot for mixed variables
-DeviceNumSDataset = subset(shrinkedDataset, select = -c(ts, light, motion))
-hamlet::mixplot(DeviceNumSDataset, pch=16)  
+jpeg(file="../LateX_project/images/chapter4/chapter4.3/pairplot_cluster_clara.jpeg", width=6, height=6, units='in', res=200)
 
-# TO DO: Better to try Clara algorithm for kmedoids
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=pam$clustering)
 
-# fpc::pamk()   # pam() variant which automatically selects the number of clusters
+dev.off()
 
 
 
 
-
-# Silhouette analysis
-
-cluster::silhoutte()
-
-# Searching the optimal number of clusters
-fviz_nbclust(RSDataset.scaled, pam, method="silhouette")
-# 3 is the best number of clusters
 
 # TO DO: Define which variables contribute more in cluster formation
 # Take a look also at the principal components
@@ -839,23 +1039,53 @@ fviz_nbclust(RSDataset.scaled, pam, method="silhouette")
 
 
 
+# ------------------------------------------------------------------------------
+
+# 4. Model based clustering 
 
 
-
-###------------------------###
-#   Model based clustering   #
-###------------------------###
-
-# Applying gaussian mixture model to the numerical variables of the dataset
-mbc = mclust::Mclust(RSDataset.scaled, G=1:10) # Considering K from 1 to 10
+mbc = mclust::Mclust(df_cl_numeric_scaled, G=1:5) # Considering K from 1 to 5
 
 str(mbc)
-
 summary(mbc$BIC)
+# latex
+
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/bic_plot.jpeg", width=6, height=6, units='in', res=200)
 
 plot(mbc, what = "BIC", ylim = range(mbc$BIC, na.rm = TRUE), legendArgs = list(x = "bottomleft"))
 
-head(mbc$z)
+dev.off()
+
+
+summary(mbc)
+#latex (?)
+
+print(mbc$modelName)
+
+print(mbc$G)
+
+
+# matrix of soft clusterization
+head(round(mbc$z, 6), 20)
+
+# matrix of hard clusterization
+head(round(mbc$classification, 6), 20)
+
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/pairplot_cluster_modelbased.jpeg", width=6, height=6, units='in', res=200)
+
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=mbc$classification)
+
+dev.off()
+
+
+# External cluster validation
+table(df_cl$device, mbc$classification)
+#latex
+
+
+
 
 
 
