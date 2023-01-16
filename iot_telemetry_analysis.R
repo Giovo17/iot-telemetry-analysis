@@ -8,6 +8,7 @@ library(xtable)
 library(moments)
 library(gamlss)
 library(gamlss.mx)
+library(gtools)
 library(tidyverse)
 library(dplyr)
 library(GGally)
@@ -48,7 +49,7 @@ head(df)
 
 df$ts = anytime::anytime(df$ts)
 
-df$device = revalue(df$device, c("b8:27:eb:bf:9d:51"="Device 1", "00:0f:00:70:91:0a"="Device 2", "1c:bf:ce:15:ec:4d"="Device 3"))
+df$device = plyr::revalue(df$device, c("b8:27:eb:bf:9d:51"="Device 1", "00:0f:00:70:91:0a"="Device 2", "1c:bf:ce:15:ec:4d"="Device 3"))
 
 
 
@@ -72,10 +73,7 @@ sum(is.na(df))
 
 
 ### ------------------------------------------------------------------------ ###
-# TS (Timestamp of readings) (not sure if mantaining this variable)
-
-
-
+# TS (Timestamp of readings)
 
 
 
@@ -85,8 +83,7 @@ sum(is.na(df))
 
 
 ### ------------------------------------------------------------------------ ###
-# Device (MAC address of the device, categorical variable)
-# useful for cluster analysis given that each device is located in a different place
+# Device (MAC address of the device)
 
 table(df$device)
 
@@ -95,9 +92,9 @@ table(df$device)
 
 
 
+
 ### ------------------------------------------------------------------------ ###
-# Light (binary variable) can be modeled as a bernoulli variable (need to check) ???
-# need to convert to numeric variable, unclass function doesn't work
+# Light (binary variable)
 
 
 table(df$light)
@@ -164,6 +161,7 @@ jpeg(file="../LateX_project/images/chapter2/co_histogram.jpeg", width=6, height 
 
 ggplot(df, aes(x=co)) +
   geom_histogram( binwidth=0.0008, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
+  geom_rug(aes(x=co, y = NULL)) +
   theme(plot.title = element_text(size=15)) +
   theme_minimal()
 
@@ -173,7 +171,7 @@ dev.off()
 
 
 ### ------------------------------------------------------------------------ ###
-# Humidity (%, so defined in [0,100])
+# Humidity
 
 summary(df$humidity)
 var(df$humidity)
@@ -200,6 +198,7 @@ jpeg(file="../LateX_project/images/chapter2/humidity_histogram.jpeg", width=6, h
 
 ggplot(df, aes(x=humidity)) +
   geom_histogram( binwidth=5, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
+  geom_rug(aes(x=humidity, y = NULL)) +
   theme(plot.title = element_text(size=15)) +
   theme_minimal()
 
@@ -237,6 +236,7 @@ jpeg(file="../LateX_project/images/chapter2/lpg_histogram.jpeg", width=6, height
 
 ggplot(df, aes(x=lpg)) +
   geom_histogram( binwidth=0.0005, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
+  geom_rug(aes(x=lpg, y = NULL)) +
   theme(plot.title = element_text(size=15)) +
   theme_minimal()
 
@@ -273,6 +273,7 @@ jpeg(file="../LateX_project/images/chapter2/smoke_histogram.jpeg", width=6, heig
 
 ggplot(df, aes(x=smoke)) +
   geom_histogram( binwidth=0.002, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
+  geom_rug(aes(x=smoke, y = NULL)) +
   theme(plot.title = element_text(size=15)) +
   theme_minimal()
 
@@ -309,6 +310,7 @@ jpeg(file="../LateX_project/images/chapter2/temp_histogram.jpeg", width=6, heigh
 
 ggplot(df, aes(x=temp)) +
   geom_histogram( binwidth=1, fill="#6b9bc3", color="#6b9bc3", alpha=0.7, position = 'identity') +
+  geom_rug(aes(x=temp, y = NULL)) +
   theme(plot.title = element_text(size=15)) +
   theme_minimal()
 
@@ -1044,7 +1046,7 @@ dev.off()
 # 4. Model based clustering 
 
 
-mbc = mclust::Mclust(df_cl_numeric_scaled, G=1:5) # Considering K from 1 to 5
+mbc = mclust::Mclust(df_cl_numeric_scaled, G=1:10) # Considering K from 1 to 10
 
 str(mbc)
 summary(mbc$BIC)
@@ -1085,8 +1087,33 @@ table(df_cl$device, mbc$classification)
 #latex
 
 
+mclust::adjustedRandIndex(df_cl$device, mbc$classification)
+# 0 = random partition, 1 = perfect agreement
 
 
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/best_number_cluster.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_mclust(mbc, "BIC", palette="jco")
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/pcaplot_classification.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_mclust(mbc, "classification", geom="point", pointsize=1.5, palette="jco")
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/pcaplot_classification_uncertainty.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_mclust(mbc, "uncertainty", palette="jco")
+
+dev.off()
+
+jpeg(file="../LateX_project/images/chapter4/chapter4.4/bivariate_marginalization.jpeg", width=6, height=6, units='in', res=200)
+
+factoextra::fviz_mclust(mbc, "uncertainty", palette="jco", choose.vars=c("temp", "smoke"))
+
+dev.off()
 
 
 
