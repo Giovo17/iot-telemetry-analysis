@@ -37,14 +37,12 @@ set.seed(17)
 setwd("~/Documents/University/Data\ Science/1°\ Year\ (2022-2023)/Data\ Analysis\ (1)/Exam\ -\ Data\ Analysis/Report/iot-telemetry-analysis")
 df = read.csv("iot_telemetry_data.csv")
 
+head(df)
+print(xtable::xtable(head(df), type="latex", digits=5))
+
+
 # Randomly select 5000 rows from dataset to speed up runtimes
 df = df[sample(nrow(df), 5000), ]
-
-
-
-head(df)
-
-#print(xtable(head(df), type = "latex", digits=5))
 
 
 df$ts = anytime::anytime(df$ts)
@@ -52,12 +50,15 @@ df$ts = anytime::anytime(df$ts)
 df$device = plyr::revalue(df$device, c("b8:27:eb:bf:9d:51"="Device 1", "00:0f:00:70:91:0a"="Device 2", "1c:bf:ce:15:ec:4d"="Device 3"))
 
 
-
+head(df)
+print(xtable::xtable(head(df), type="latex", digits=5))
 
 
 str(df)
 
 summary(df)
+print(xtable::xtable(summary(df), type="latex", digits=5))
+
 
 sum(is.na(df))
 
@@ -79,17 +80,19 @@ sum(is.na(df))
 
 
 
-
-
-
 ### ------------------------------------------------------------------------ ###
 # Device (MAC address of the device)
 
 table(df$device)
 
-#xtable(df$device)
+jpeg(file="../LateX_project/images/chapter2/device_barplot.jpeg", width=6, height =6, units='in', res=200)
 
+ggplot(df, aes(x=as.factor(device) )) +
+  geom_bar(color="#6b9bc3", fill=rgb(0.1,0.4,0.5,0.7) ) + 
+  geom_text(stat='count', aes(label=..count..), vjust=-1) +
+  theme_minimal()
 
+dev.off()
 
 
 
@@ -98,7 +101,6 @@ table(df$device)
 
 
 table(df$light)
-
 
 jpeg(file="../LateX_project/images/chapter2/light_barplot.jpeg", width=6, height =6, units='in', res=200)
 
@@ -111,13 +113,10 @@ dev.off()
 
 
 
-
-
 ### ------------------------------------------------------------------------ ###
 # Motion (binary variable)
 
 table(df$motion)
-
 
 jpeg(file="../LateX_project/images/chapter2/motion_barplot.jpeg", width=6, height =6, units='in', res=200)
 
@@ -127,9 +126,6 @@ ggplot(df, aes(x=as.factor(motion) )) +
   theme_minimal()
 
 dev.off()
-
-
-
 
 
 
@@ -169,7 +165,6 @@ dev.off()
 
 
 
-
 ### ------------------------------------------------------------------------ ###
 # Humidity
 
@@ -206,7 +201,6 @@ dev.off()
 
 
 
-
 ### ------------------------------------------------------------------------ ###
 # LPG (liquefied petroleum gas)
 
@@ -214,7 +208,6 @@ summary(df$lpg)
 var(df$lpg)
 moments::skewness(df$lpg)
 moments::kurtosis(df$lpg)
-
 
 
 # EDA
@@ -241,7 +234,6 @@ ggplot(df, aes(x=lpg)) +
   theme_minimal()
 
 dev.off()
-
 
 
 
@@ -281,7 +273,6 @@ dev.off()
 
 
 
-
 ### ------------------------------------------------------------------------ ###
 # Temp (temperature, defined in R)
 
@@ -318,9 +309,6 @@ dev.off()
 
 
 
-
-
-
 ### ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ###------------------------------###
@@ -331,11 +319,7 @@ dev.off()
 # Multivariate EDA
 
 df_numeric = df %>% select_if(is.numeric)
-
 df_numeric_scaled = as.data.frame(scale(df_numeric))
-
-
-
 
 
 # Pairplot of all numerical variables
@@ -346,7 +330,6 @@ ggpairs(df_numeric,
         lower = list(continuous = "points", combo = "dot_no_facet"))
 
 dev.off()
-
 
 
 # A better way to visualize correlation matrix
@@ -386,22 +369,24 @@ str(df_numeric_scaled.eigen)
 pr.out  = prcomp(df_numeric_scaled)
 
 print(pr.out$sdev)
+
 print(pr.out$rotation)
+print(xtable::xtable(pr.out$rotation, type="latex", digits=5))
+
 print(pr.out$center)
+print(xtable::xtable(table(pr.out$center), type="latex", digits=5))
+
 print(pr.out$scale)
-
-
 
 
 
 
 # CPVE
 PVE = df_numeric_scaled.eigen$values / sum(df_numeric_scaled.eigen$values)
-round(PVE, 4)
+round(PVE, 5)
 
 # Kaiser Rule
 kaiserVector = df_numeric_scaled.eigen$values - 1   # Positive values will be choosen
-
 
 kaiserNumOfPC = 0
 for(x in kaiserVector){
@@ -413,16 +398,14 @@ print(paste("Number of PCs according to Kaiser Rule: ", kaiserNumOfPC))
 
 
 
-
 data = data.frame(
   "x" = 1:5,
   "y" = df_numeric_scaled.eigen$values
 )
 
+
 # Scree plot
 jpeg(file="../LateX_project/images/chapter3/scree_plot.jpeg", width=6, height =6, units='in', res=200)
-
-#plot(df_numeric_scaled.eigen$values, type="b")
 
 ggplot(data, aes(x=x, y=y)) +
   geom_line( color="grey") +
@@ -433,9 +416,6 @@ dev.off()
 
 
 
-
-
-
 jpeg(file="../LateX_project/images/chapter3/pca_plot.jpeg", width=6, height =6, units='in', res=200)
 
 factoextra::fviz_pca_ind(pr.out, legend="top", habillage=df$device, palette=c("green", "red", "blue"), geom="point", ggtheme=theme_minimal())
@@ -443,14 +423,11 @@ factoextra::fviz_pca_ind(pr.out, legend="top", habillage=df$device, palette=c("g
 dev.off()
 
 
-
 jpeg(file="../LateX_project/images/chapter3/biplot.jpeg", width=6, height =6, units='in', res=200)
 
 factoextra::fviz_pca_biplot(pr.out, geom="point", ggtheme=theme_minimal())
 
 dev.off()
-
-
 
 
 
@@ -471,14 +448,13 @@ df_cl_numeric_scaled = as.data.frame(scale(df_cl_numeric))
 
 # 1. CLUSTER VALIDATION   
 
-# 1a. Assessment of cluster tendency
+# 1a. Assessing cluster tendency
 
 
 # Generating the benchmark dataset from a uniform distribution
 benchmark_df = apply(df_cl_numeric, 2, function(x){runif(length(x), min(x), max(x))})
 benchmark_df = as.data.frame(benchmark_df) # Transform benchmark_df in a data frame cause apply return a vector
 benchmark_df_scaled = as.data.frame(scale(benchmark_df))
-
 
 
 
@@ -553,7 +529,6 @@ jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_benchmark_df_manhatta
 factoextra::fviz_dist(dist(benchmark_df, method="manhattan"), show_labels=FALSE)
 
 dev.off()
-
 
 
 
@@ -682,7 +657,6 @@ dev.off()
 
 
 
-
 # 1c. Cluster validation
 
 
@@ -706,16 +680,12 @@ dev.off()
 
 # Confusion matrix to compare the kmeans result with external information
 table(km_res$cluster, df_cl$device)
-#print(, type="latex", digits=5)
-#print(xtable(table(km_res$cluster, df_cl$device), type="latex"), file="filename2.tex")
-
-# The results are decently good for each of the 3 clusters
-# Missclassified points: 11+8=19 that is the 3.8% of the data
+print(xtable::xtable(table(km_res$cluster, df_cl$device), type="latex", digits=5))
 
 
 
-hc_res = factoextra::eclust(df_cl_numeric_scaled, FUNcluster="hclust", k=3, hc_metric="euclidean", 
-                            hc_method="ward.D2", graph=FALSE)
+hc_res = factoextra::eclust(df_cl_numeric_scaled, FUNcluster="hclust", k=3, hc_metric="euclidean", hc_method="ward.D2", graph=FALSE)
+
 jpeg(file="../LateX_project/images/chapter4/chapter4.1/hc_dend_viz.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_dend(hc_res, show_labels=FALSE, palette="jco", ggtheme=theme_minimal())
@@ -729,10 +699,11 @@ jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", 
 factoextra::fviz_silhouette(km_res, palette="jco", ggtheme=theme_minimal())
 
 dev.off()
-# The results are good
+
 
 
 clara_res = factoextra::eclust(df_cl_numeric_scaled, k=3, FUNcluster="clara", graph=FALSE)
+
 jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_cluster(clara_res, geom = "point", ellipse.type = "norm", palette = "jco", ggtheme = theme_minimal())
@@ -743,9 +714,7 @@ dev.off()
 
 # Confusion matrix to compare the clara result with external information
 table(clara_res$clustering, df_cl$device)
-# latex
-# The results are decently good for each of the 3 clusters, and they are sightly better with respect to the kmeans results
-# Missclassified point: 11+8=19 that is the 3.8% of the data
+print(xtable::xtable(table(clara_res$clustering, df_cl$device), type="latex", digits=5))
 
 
 
@@ -755,40 +724,6 @@ jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_clara.jpeg", w
 factoextra::fviz_silhouette(clara_res, palette="jco", ggtheme=theme_minimal())
 
 dev.off()
-# In the first cluster there some units with a silhouette value lower than 0, this is a bad result for pam algorithm
-
-
-
-
-missCvec = vector()   # Vector of missclassified units
-
-for(k in seq(1, length(df_cl[,1]))){
-  if(clara_res$silinfo$widths[k,3] < 0){
-    missCvec = append(missCvec, strtoi(rownames(clara_res$silinfo$widths[k,])))  # Add the missclassified units to missCvec
-  }
-}
-
-print(missCvec)
-
-
-# Visualizing the units that are badly assigned by clara algorithm
-colvec = clara_res$clustering   # Assigning initial colors according to clara clusterization
-colvec[missCvec] = 4      # Changing color to the missclassified units
-
-
-# Visualize the clara missclassified units in the scatterplot
-#jpeg(file="../LateX_project/images/chapter4/chapter4.1/pairplot_missclassified_clara.jpeg", width=6, height =6, units='in', res=200)
-
-#pairs(df_cl_numeric_scaled, gap=0, pch=16, col=colvec, cex=c(0.3, 0.3, 0.3, 3)[colvec])
-
-#dev.off()
-# As we can see the three blue missclassified units are difficult units to be clusterized cause there are in between two clusters
-
-
-
-
-
-
 
 
 
@@ -806,7 +741,6 @@ jpeg(file="../LateX_project/images/chapter4/chapter4.2/dissimilarity_matrix.jpeg
 factoextra::fviz_dist(diss)  # Dissimilarity matrix graphic representation
 
 dev.off()
-
 
 
 
@@ -856,19 +790,18 @@ cor(diss, cophenetic(hc_ward))  # Correlation between original distance vector a
 # Clustering division according to the average method
 groupsAverage = cutree(hc_average, k=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
 table(groupsAverage)
+print(xtable::xtable(table(groupsAverage), type="latex"))
 
 
 # Clustering division according to the ward method
 groupsWard = cutree(hc_ward, k=3)   # Cut the dendogram based on k (number of clusters) or h (dendogram height)
 table(groupsWard)
-
-# According to the two previous results I think there are outliers cause some clusters are containing only 1 or 2 points
-# From the scatterplot it's clearer their presence
+print(xtable::xtable(table(groupsWard), type="latex"))
 
 
 # Confusion matrix
 table(groupsAverage, groupsWard)  # Useful to compare two different clustering partitions
-
+print(xtable::xtable(table(groupsAverage, groupsWard), type="latex"))
 
 
 
@@ -911,15 +844,6 @@ dev.off()
 
 
 
-hc.agnes = cluster::agnes(x=df_cl_numeric_scaled, stand=FALSE, metric="euclidean", method="average")
-jpeg(file="../LateX_project/images/chapter4/chapter4.2/dendogram_agnes.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_dend(hc.agnes, cex=0.6, k=3)
-
-dev.off()
-
-
-
 
 # ------------------------------------------------------------------------------
 
@@ -936,28 +860,11 @@ km = kmeans(df_cl_numeric_scaled, centers=3, nstart=25)
 print(km$size)   # Important to evaluate the presence of outliers
 
 print(km$centers)   # Very important to analize Cluster means to characterize the clusters
-# Cluster means:
-#           co   humidity        lpg      smoke        temp
-# 1 -0.9683959  1.2863623 -0.9970905 -0.9927343 -0.92545025
-# 2  0.8242563 -0.8612697  0.8256278  0.8261186 -0.09137922
-# 3 -0.2313946 -0.1359184 -0.1945112 -0.2014368  1.44686904
-
-# latex
-
-
-
-# Data is scaled so the mean for each variable is 0
-# Units in cluster 1 are characterized by an above average humidity and the other values are below average
-# Units in cluster 2 are characterized by an above average temperature, slightly below average values co, lpg and smoke and more or less average humidity
-# Units in cluster 3 are characterized by an above average co, lpg and smoke, an average temperature and a below average humidity
-
-# This process is useful in order to assign new units to the clusters
+print(xtable::xtable(km$centers, type="latex", digits=5))
 
 
 clusterVariability = scales::label_percent()(km$betweenss/km$totss)   # Variability explained by the clustering
 print(clusterVariability)
-# So this clustering method explains the 68% of the original variability
-# Useful to select the best clustering method given the number of clusters K (the higher the better)
 
 
 # Visualize the clusters in the scatterplot
@@ -986,17 +893,9 @@ dev.off()
 
 # Analizing the Cluster means of the original dataset 
 aggregate(df_cl_numeric, by=list(cluster=km$cluster), mean)
-#   cluster          co humidity         lpg      smoke     temp
-# 1       1 0.003283287 76.07329 0.005634292 0.01474428 19.84161
-# 2       2 0.005664408 51.34459 0.008408754 0.02258743 22.15495
-# 3       3 0.004262222 59.69658 0.006855943 0.01815646 26.42137
-
-# latex
+print(xtable::xtable(aggregate(df_cl_numeric, by=list(cluster=km$cluster), mean), type="latex", digits=5))
 
 
-
-# Adding the column of cluster of membership to the dataset
-CRDataset = cbind(df_cl_numeric, cluster=km$cluster)
 
 # Visualize the clusters in the PC space
 jpeg(file="../LateX_project/images/chapter4/chapter4.3/pcaplot_cluster_kmeans.jpeg", width=6, height=6, units='in', res=200)
@@ -1015,27 +914,25 @@ dev.off()
 # KMEDOIDS
 
 
-# Working with the whole dataset including categorical variables
-# I expect a better result cause I think in the dataset there are some outliers
-
 clara_cl = cluster::clara(df_cl_numeric_scaled, 3, metric="euclidean", stand=FALSE)
 
 
 jpeg(file="../LateX_project/images/chapter4/chapter4.3/pairplot_cluster_clara.jpeg", width=6, height=6, units='in', res=200)
 
-pairs(df_cl_numeric_scaled, pch=16, gap=0, col=pam$clustering)
+pairs(df_cl_numeric_scaled, pch=16, gap=0, col=clara_cl$clustering)
 
 dev.off()
 
 
 
+# Confusion matrix to compare the clara result with external information
+table(clara_cl$cluster, df_cl$device)
+print(xtable::xtable(table(clara_cl$cluster, df_cl$device), type="latex", digits=5))
 
 
-# TO DO: Define which variables contribute more in cluster formation
-# Take a look also at the principal components
-
-
-
+# Confusion matrix to compare the clara result with kmeans result
+table(km_res$cluster, clara_cl$cluster)
+print(xtable::xtable(table(km_res$cluster, clara_cl$cluster), type="latex", digits=5))
 
 
 
@@ -1050,7 +947,7 @@ mbc = mclust::Mclust(df_cl_numeric_scaled, G=1:10) # Considering K from 1 to 10
 
 str(mbc)
 summary(mbc$BIC)
-# latex
+
 
 
 jpeg(file="../LateX_project/images/chapter4/chapter4.4/bic_plot.jpeg", width=6, height=6, units='in', res=200)
@@ -1061,17 +958,17 @@ dev.off()
 
 
 summary(mbc)
-#latex (?)
 
 print(mbc$modelName)
-
 print(mbc$G)
 
 
-# matrix of soft clusterization
+# head matrix of soft clusterization
 head(round(mbc$z, 6), 20)
+print(xtable::xtable(head(round(mbc$z, 6), 20), type="latex", digits=5))
 
-# matrix of hard clusterization
+
+# head matrix of hard clusterization
 head(round(mbc$classification, 6), 20)
 
 
@@ -1084,7 +981,7 @@ dev.off()
 
 # External cluster validation
 table(df_cl$device, mbc$classification)
-#latex
+print(xtable::xtable(table(df_cl$device, mbc$classification), type="latex", digits=5))
 
 
 mclust::adjustedRandIndex(df_cl$device, mbc$classification)
