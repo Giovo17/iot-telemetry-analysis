@@ -101,78 +101,81 @@ M[c(names(which(M[,2]==max(M[,2]))), names(which(M[,3]==min(M[,3]))), names(whic
 print(xtable::xtable(M[c(names(which(M[,2]==max(M[,2]))), names(which(M[,3]==min(M[,3]))), names(which(M[,4]==min(M[,4])))),], type="latex", digits=5))
 
 
-# winning model = exGAUS
+# winning model = TF
 
 
 
-# Mixtures with exGAUS and k=2
+# Mixtures with TF and k=2
 
-fit_co_exGAUS_2 = gamlss.mx::gamlssMXfits(n=5, co_logit~1, family=exGAUS, K=2, data=NULL)
+fit_co_TF_2 = gamlss.mx::gamlssMXfits(n=5, co_logit~1, family=TF, K=2, data=NULL)
 
-mu_hat1 = fit_co_exGAUS_2[["models"]][[1]][["mu.coefficients"]]
-sigma_hat1 = abs(exp(fit_co_exGAUS_2[["models"]][[1]][["sigma.coefficients"]]))
-nu_hat1 = abs(exp(fit_co_exGAUS_2[["models"]][[1]][["nu.coefficients"]]))
+mu_hat1 = fit_co_TF_2[["models"]][[1]][["mu.coefficients"]]
+sigma_hat1 = abs(exp(fit_co_TF_2[["models"]][[1]][["sigma.coefficients"]]))
+nu_hat1 = abs(exp(fit_co_TF_2[["models"]][[1]][["nu.coefficients"]]))
 
-mu_hat2 = fit_co_exGAUS_2[["models"]][[2]][["mu.coefficients"]]
-sigma_hat2 = abs(exp(fit_co_exGAUS_2[["models"]][[2]][["sigma.coefficients"]]))
-nu_hat2 = abs(exp(fit_co_exGAUS_2[["models"]][[2]][["nu.coefficients"]]))
+mu_hat2 = fit_co_TF_2[["models"]][[2]][["mu.coefficients"]]
+sigma_hat2 = abs(exp(fit_co_TF_2[["models"]][[2]][["sigma.coefficients"]]))
+nu_hat2 = abs(exp(fit_co_TF_2[["models"]][[2]][["nu.coefficients"]]))
 
 
 
-jpeg(file="../LateX_project/images/chapter2/fitting/co_logit_exGAUS_mixtures_2.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter2/fitting/co_logit_TF_mixtures_2.jpeg", width=6, height=6, units='in', res=200)
 
 hist(co_logit, breaks=30, freq=FALSE)
 
-lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_exGAUS_2[["prob"]][1]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)),
+lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_TF_2[["prob"]][1]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)),
                                                                                                        mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1), lty=2, lwd=3, col=2)
 
-lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_exGAUS_2[["prob"]][2]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)),
+lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_TF_2[["prob"]][2]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)),
                                                                                                        mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2), lty=2, lwd=3, col=3)
 
 lines(seq(min(co_logit), max(co_logit), length=length(co_logit)),
-      fit_co_exGAUS_2[["prob"]][1]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1) +
-        fit_co_exGAUS_2[["prob"]][2]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2), lty=1, lwd=3, col=1)
+      fit_co_TF_2[["prob"]][1]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1) +
+        fit_co_TF_2[["prob"]][2]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2), lty=1, lwd=3, col=1)
 
 dev.off()
 
 
 
-# Mixtures with exGAUS and k=3
+# Mixtures with TF and k=3
 
-fit_co_exGAUS_3 = gamlss.mx::gamlssMXfits(n=5, co_logit~1, family=exGAUS, K=3, data=NULL)
+fit_co_TF_3 = gamlss.mx::gamlssMXfits(n=5, co_logit~1, family=TF, K=3, data=NULL)
 
-mu_hat1 = fit_co_exGAUS_3[["models"]][[1]][["mu.coefficients"]]
-sigma_hat1 = abs(exp(fit_co_exGAUS_3[["models"]][[1]][["sigma.coefficients"]]))
-nu_hat1 = abs(exp(fit_co_exGAUS_3[["models"]][[1]][["nu.coefficients"]]))
+mu_hat1 = fit_co_TF_3[["models"]][[1]][["mu.coefficients"]]
+sigma_hat1 = abs(exp(fit_co_TF_3[["models"]][[1]][["sigma.coefficients"]]))
+nu_hat1 = abs(exp(fit_co_TF_3[["models"]][[1]][["nu.coefficients"]]))
 
-mu_hat2 = fit_co_exGAUS_3[["models"]][[2]][["mu.coefficients"]]
-sigma_hat2 = abs(exp(fit_co_exGAUS_3[["models"]][[2]][["sigma.coefficients"]]))
-nu_hat2 = abs(exp(fit_co_exGAUS_3[["models"]][[2]][["nu.coefficients"]]))
+mu_hat2 = fit_co_TF_3[["models"]][[2]][["mu.coefficients"]]
+sigma_hat2 = abs(exp(fit_co_TF_3[["models"]][[2]][["sigma.coefficients"]]))
+nu_hat2 = abs(exp(fit_co_TF_3[["models"]][[2]][["nu.coefficients"]]))
 
-mu_hat3 = fit_co_exGAUS_3[["models"]][[3]][["mu.coefficients"]]
-sigma_hat3 = abs(exp(fit_co_exGAUS_3[["models"]][[3]][["sigma.coefficients"]]))
-nu_hat3= abs(exp(fit_co_exGAUS_3[["models"]][[3]][["nu.coefficients"]]))
+mu_hat3 = fit_co_TF_3[["models"]][[3]][["mu.coefficients"]]
+sigma_hat3 = abs(exp(fit_co_TF_3[["models"]][[3]][["sigma.coefficients"]]))
+nu_hat3= abs(exp(fit_co_TF_3[["models"]][[3]][["nu.coefficients"]]))
 
 
-jpeg(file="../LateX_project/images/chapter2/fitting/co_logit_exGAUS_mixtures_3.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter2/fitting/co_logit_TF_mixtures_3.jpeg", width=6, height=6, units='in', res=200)
 
 hist(co_logit, breaks=30, freq=FALSE)
 
-lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_exGAUS_3[["prob"]][1]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)),
+lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_TF_3[["prob"]][1]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)),
                                                                                                        mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1), lty=2, lwd=3, col=2)
 
-lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_exGAUS_3[["prob"]][2]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)),
+lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_TF_3[["prob"]][2]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)),
                                                                                                        mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2), lty=2, lwd=3, col=3)
 
-lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_exGAUS_3[["prob"]][2]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)),
+lines(seq(min(co_logit), max(co_logit), length=length(co_logit)), fit_co_TF_3[["prob"]][2]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)),
                                                                                                        mu=mu_hat3, sigma=sigma_hat3, nu=nu_hat3), lty=2, lwd=3, col=4)
 
 lines(seq(min(co_logit), max(co_logit), length=length(co_logit)),
-      fit_co_exGAUS_3[["prob"]][1]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1) +
-        fit_co_exGAUS_3[["prob"]][2]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2) +
-        fit_co_exGAUS_3[["prob"]][3]*dexGAUS(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat3, sigma=sigma_hat3, nu=nu_hat3), lty=1, lwd=3, col=1)
+      fit_co_TF_3[["prob"]][1]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat1, sigma=sigma_hat1, nu=nu_hat1) +
+        fit_co_TF_3[["prob"]][2]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat2, sigma=sigma_hat2, nu=nu_hat2) +
+        fit_co_TF_3[["prob"]][3]*dTF(seq(min(co_logit), max(co_logit), length=length(co_logit)), mu=mu_hat3, sigma=sigma_hat3, nu=nu_hat3), lty=1, lwd=3, col=1)
 
 dev.off()
+
+
+LR.test(fit_co_TF_2, fit_co_TF_3)
 
 
 
@@ -419,6 +422,9 @@ lines(seq(min(lpg_logit), max(lpg_logit), length=length(lpg_logit)),
                                       mu=mu_hat3, sigma=sigma_hat3, nu=nu_hat3), lty=1, lwd=3, col=1)
 
 dev.off()
+
+
+LR.test(fit_lpg_TF_2, fit_lpg_TF_3)
 
 
 

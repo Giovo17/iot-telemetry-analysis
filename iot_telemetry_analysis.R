@@ -366,18 +366,12 @@ df_numeric_scaled.eigen = eigen(df_numeric_scaled.cov)
 str(df_numeric_scaled.eigen)
 
 
-pr.out  = prcomp(df_numeric_scaled)
+pr.out = prcomp(df_numeric_scaled)
 
 print(pr.out$sdev)
 
 print(pr.out$rotation)
 print(xtable::xtable(pr.out$rotation, type="latex", digits=5))
-
-print(pr.out$center)
-print(xtable::xtable(table(pr.out$center), type="latex", digits=5))
-
-print(pr.out$scale)
-
 
 
 
@@ -413,6 +407,7 @@ ggplot(data, aes(x=x, y=y)) +
   theme_minimal()
 
 dev.off()
+
 
 
 
@@ -517,19 +512,6 @@ factoextra::fviz_dist(dist(benchmark_df), show_labels=FALSE)
 dev.off()
 
 
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_df_numeric_manhattan.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_dist(dist(df_cl_numeric_scaled, method="manhattan"), show_labels=FALSE)
-
-dev.off()
-
-
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/vat_benchmark_df_manhattan.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_dist(dist(benchmark_df, method="manhattan"), show_labels=FALSE)
-
-dev.off()
-
 
 
 # 1b. Determining the best number of clusters
@@ -543,7 +525,7 @@ factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=10, method = "wss"
 
 dev.off()
 
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/elbow_method_pam.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/elbow_method_clara.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method="wss") +
   geom_vline(xintercept=3, linetype=2)
@@ -565,7 +547,7 @@ factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=10, method="silhou
 
 dev.off()
 
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_method_pam.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_method_clara.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method="silhouette")
 
@@ -585,7 +567,7 @@ factoextra::fviz_nbclust(df_cl_numeric_scaled, kmeans, nstart=20, method='gap_st
 
 dev.off()
 
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/gap_method_pam.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/gap_method_clara.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_nbclust(df_cl_numeric_scaled, cluster::clara, method='gap_stat', nboot=150)
 
@@ -597,63 +579,6 @@ factoextra::fviz_nbclust(df_cl_numeric_scaled, hcut, nstart=20, method='gap_stat
 
 dev.off()
 
-
-# NbClust function
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="kmeans")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_kmeans_euclidean.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="single")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_single_euclidean.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="average")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_average_euclidean.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="complete")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_complete_euclidean.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="single")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_single_manhattan.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="average")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_average_manhattan.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb = NbClust::NbClust(df_cl_numeric_scaled, distance="manhattan", min.nc=2, max.nc=10, method="complete")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_hcut_complete_manhattan.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
-
-nb <- NbClust::NbClust(df_cl_numeric_scaled, distance="euclidean", min.nc=2, max.nc=10, method="centroid")
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/nbclust_centroid_euclidean.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_nbclust(nb)
-
-dev.off()
 
 
 
@@ -683,16 +608,6 @@ table(km_res$cluster, df_cl$device)
 print(xtable::xtable(table(km_res$cluster, df_cl$device), type="latex", digits=5))
 
 
-
-hc_res = factoextra::eclust(df_cl_numeric_scaled, FUNcluster="hclust", k=3, hc_metric="euclidean", hc_method="ward.D2", graph=FALSE)
-
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/hc_dend_viz.jpeg", width=6, height=6, units='in', res=200)
-
-factoextra::fviz_dend(hc_res, show_labels=FALSE, palette="jco", ggtheme=theme_minimal())
-
-dev.off()
-
-
 # Silhouette plot on kmeans
 jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", width=6, height=6, units='in', res=200)
 
@@ -704,7 +619,7 @@ dev.off()
 
 clara_res = factoextra::eclust(df_cl_numeric_scaled, k=3, FUNcluster="clara", graph=FALSE)
 
-jpeg(file="../LateX_project/images/chapter4/chapter4.1/silhouette_kmeans.jpeg", width=6, height=6, units='in', res=200)
+jpeg(file="../LateX_project/images/chapter4/chapter4.1/clara_viz.jpeg", width=6, height=6, units='in', res=200)
 
 factoextra::fviz_cluster(clara_res, geom = "point", ellipse.type = "norm", palette = "jco", ggtheme = theme_minimal())
 
@@ -925,15 +840,30 @@ dev.off()
 
 
 
-# Confusion matrix to compare the clara result with external information
-table(clara_cl$cluster, df_cl$device)
-print(xtable::xtable(table(clara_cl$cluster, df_cl$device), type="latex", digits=5))
+# Visualize the clusters in the PC space
+jpeg(file="../LateX_project/images/chapter4/chapter4.3/pcaplot_cluster_kmedoids.jpeg", width=6, height=6, units='in', res=200)
+
+fviz_cluster(clara_cl, data=df_cl_numeric_scaled, palette=c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
+             ellipse.type="euclid", # Concentration ellipse
+             star.plot=TRUE, # Add segments from centroids to items
+             repel=TRUE, # Avoid label overplotting (slow)
+             ggtheme=theme_minimal())
+
+dev.off()
+
+
+
 
 
 # Confusion matrix to compare the clara result with kmeans result
 table(km_res$cluster, clara_cl$cluster)
 print(xtable::xtable(table(km_res$cluster, clara_cl$cluster), type="latex", digits=5))
 
+
+
+# Analizing the Cluster means of the original dataset 
+aggregate(df_cl_numeric, by=list(cluster=clara_cl$cluster), mean)
+print(xtable::xtable(aggregate(df_cl_numeric, by=list(cluster=clara_cl$cluster), mean), type="latex", digits=5))
 
 
 
